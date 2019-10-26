@@ -27,17 +27,25 @@ public class Inspector {
 	public void inspectClass(Class c, Object obj, boolean recursive, int depth) {
 		if(c!=null) {
 			System.out.println(addTabs(depth) + c.getName());
-			System.out.println(addTabs(depth) + "SuperClass:" + c.getSuperclass().getSimpleName());
+			if(c.getName() != "java.lang.Object"){
+				System.out.println(addTabs(depth) + "SuperClass:" + c.getSuperclass().getSimpleName());
 			
-			System.out.println(addTabs(depth) + c.isInterface());
-			//System.out.println(clz.);   Can use this to check for all kinds of things
+				System.out.println(addTabs(depth) + c.isInterface());
+				//System.out.println(clz.);   Can use this to check for all kinds of things
 			
-			//Use declared!!
-			if(c.getDeclaredFields().length>0) {
-				inspectFields(c, depth);
-			}
-			if(c.getDeclaredMethods().length>0) {
-				inspectMethods(c, depth);
+				//Use declared!!
+				if(c.getDeclaredFields().length>0) {
+					inspectFields(c, depth);
+				}
+				if(c.getDeclaredMethods().length>0) {
+					inspectMethods(c, depth);
+				}
+				if(recursive == true){
+					if(c.getSuperclass().getSimpleName() == "Object"){
+						inspectClass(c.getSuperclass(), obj, false, depth + 1);
+					}
+					inspectClass(c.getSuperclass(), obj, true, depth + 1);
+				}
 			}
 		}
 	}
@@ -52,7 +60,7 @@ public class Inspector {
 			Class type = fld.getType();
 			int mods = fld.getModifiers();
 			
-			System.out.println(addSpaces() + addTabs(depth) + Modifier.toString(fld.getModifiers()) + " " + type.getName() + " " + name);
+			System.out.println(" " + addTabs(depth) + Modifier.toString(fld.getModifiers()) + " " + type.getName() + " " + name);
 		}
 		
 	}
@@ -65,10 +73,10 @@ public class Inspector {
 			Class returnType = m.getReturnType();
 			
 			//Get modifiers is the same as Fields
-			System.out.println(addSpaces() + addTabs(depth) + returnType.getName() + " " + name);
+			System.out.println(" " + addTabs(depth) + returnType.getName() + " " + name);
 			Parameter[] params = m.getParameters();
 			for(Parameter p : params) {
-				System.out.println(addSpaces() + addTabs(depth) + p.getType() + " " + p.getName());
+				System.out.println(" " + addTabs(depth) + p.getType() + " " + p.getName());
 			}
 		}
 		
@@ -107,11 +115,5 @@ public class Inspector {
 		}
 		return tabs;
 	}
-	
-	private String addSpaces(){
-		String spaces = " ";
-		return spaces;
-	}
-	
 	
 }
